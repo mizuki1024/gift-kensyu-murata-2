@@ -39,8 +39,10 @@ export default async function RootLayout({ children }: {children: React.ReactNod
               <Link href="/register" className="hover:underline">サインアップ</Link>
             </>
           )}
-          {children}
         </nav>
+        <main className="flex-1">
+          {children}
+        </main>
       </body>
     </html>
   )
