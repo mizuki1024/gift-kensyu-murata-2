@@ -1,11 +1,11 @@
-name: CI Pipline
+name: CI Pipeline
 
-  on:
-    pull_request:
+on:
+  pull_request:
 
-  jobs:
-    test-and-build:
-      runs-on: ibuntu-latest
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
 
     steps:
       - name: コードをチェックアウト
@@ -16,7 +16,7 @@ name: CI Pipline
         with:
           version: 9
 
-      - name:Node.jsのセットアップ
+      - name: Node.jsのセットアップ
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -25,15 +25,14 @@ name: CI Pipline
       - name: パッケージのインストール
         run: pnpm install
 
-      - name: 構文のチェック (ESLint)
+      - name: 構文チェック (ESLint)
         run: pnpm lint
 
-      - name:型チェック
+      - name: 型チェック (TypeScript)
         run: pnpm type-check
 
-      - name: 動作チェック
+      - name: 動作テスト (Vitest)
         run: pnpm test
 
-      - name: ビルド
+      - name: ビルド (Build)
         run: pnpm build
-   
