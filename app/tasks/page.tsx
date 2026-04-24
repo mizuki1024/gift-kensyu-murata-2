@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
-import { createdTask, deleteTask, updateTaskStatus } from './action'
+import { deleteTask, updateTaskStatus } from './action'
+import { TaskForm } from './TaskForm'
 
 const STATUS_OPTIONS = ['todo', 'in_progress', 'done'] as const
 
@@ -47,21 +48,7 @@ export default async function TasksPage() {
     <div className="max-w-2xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">タスク一覧</h1>
 
-      <form action={createdTask} className="flex gap-2 mb-8">
-        <input
-          type="text"
-          name="title"
-          placeholder="新しいタスクを入力"
-          required
-          className="flex-1 border rounded px-3 py-2 text-sm"
-        />
-        <button
-          type="submit"
-          className="bg-black text-white rounded px-4 py-2 text-sm hover:bg-zinc-700"
-        >
-          追加
-        </button>
-      </form>
+      <TaskForm />
 
       {tasks.length === 0 ? (
         <p className="text-zinc-500 text-sm">タスクがありません。</p>

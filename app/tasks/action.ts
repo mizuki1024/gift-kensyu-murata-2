@@ -11,24 +11,35 @@ async function getAuthenticatedClient() {
   return { supabase, user }
 }
 
-export async function createdTask(formData: FormData) {
+export async function createdTask(
+  _prevState: { error: string } | null,
+  formData: FormData
+): Promise<{ error: string } | null> {
   const title = formData.get('title') as string
-  if (!title?.trim()) return
+  if (!title?.trim()) return null
 
   const { supabase, user } = await getAuthenticatedClient()
 
-  await supabase.from('users').upsert({
+  const upsertResult = await supabase.from('users').upsert({
     id: user.id,
     email: user.email ?? '',
     name: (user.email ?? user.id).split('@')[0],
   }, { onConflict: 'id' })
 
+  if (upsertResult.error) {
+    return { error: `users upsert failed: ${upsertResult.error.message} (code: ${upsertResult.error.code})` }
+  }
+
   const { error } = await supabase
     .from('tasks')
     .insert({ title, user_id: user.id })
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    return { error: `tasks insert failed: ${error.message} (code: ${error.code})` }
+  }
+
   revalidatePath('/tasks')
+  return null
 }
 
 export async function updateTaskStatus(id: number, status: string) {
