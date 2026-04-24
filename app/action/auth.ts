@@ -20,11 +20,20 @@ export async function signUp(formData: FormData) {
   }
 
   const supabase = await createClient()
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: result.data.email,
     password: result.data.password,
   })
   if (error) return { error: error.message }
+
+  if (data.user) {
+    await supabase.from('users').upsert({
+      id: data.user.id,
+      email: result.data.email,
+      name: result.data.email.split('@')[0],
+    }, { onConflict: 'id' })
+  }
+
   redirect('/tasks')
 }
 

@@ -16,6 +16,13 @@ export async function createdTask(formData: FormData) {
   if (!title?.trim()) return
 
   const { supabase, user } = await getAuthenticatedClient()
+
+  await supabase.from('users').upsert({
+    id: user.id,
+    email: user.email ?? '',
+    name: (user.email ?? user.id).split('@')[0],
+  }, { onConflict: 'id' })
+
   const { error } = await supabase
     .from('tasks')
     .insert({ title, user_id: user.id })
