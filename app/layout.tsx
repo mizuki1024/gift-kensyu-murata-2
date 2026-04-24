@@ -6,8 +6,8 @@ import { createClient } from "@/utils/supabase/server";
 import { logout } from "@/app/action/auth";
 
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,7 +19,7 @@ export default async function RootLayout({ children }: {children: React.ReactNod
   const { data: {user} } = await supabase.auth.getUser()
 
   return (
-    <html lang="en" className={'${geistSans .variable}${geistMono.variable} h-full antialised'}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <nav className="border-b px-6 py-3 flex gap-6">
           <Link href="/" className="font-semibold hover:underline">Home</Link>

@@ -15,7 +15,10 @@ export default async function TasksPage() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[tasks] Supabase query error:', JSON.stringify(error))
+    throw new Error(error.message)
+  }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
