@@ -17,7 +17,13 @@ export default async function TasksPage() {
 
   if (error) {
     console.error('[tasks] Supabase query error:', JSON.stringify(error))
-    throw new Error(error.message)
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-8">
+        <p className="text-red-600 font-mono text-sm">
+          DB error: {error.message} (code: {error.code}, hint: {error.hint})
+        </p>
+      </div>
+    )
   }
 
   return (
