@@ -5,25 +5,42 @@ import { createdTask, deleteTask, updateTaskStatus } from './action'
 const STATUS_OPTIONS = ['todo', 'in_progress', 'done'] as const
 
 export default async function TasksPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  let supabase: Awaited<ReturnType<typeof createClient>>
+  let user: { id: string } | null = null
+
+  try {
+    supabase = await createClient()
+    const { data, error } = await supabase.auth.getUser()
+    if (error) {
+      return <div className="p-4 text-red-600">getUser error: {error.message}</div>
+    }
+    user = data.user
+  } catch (e) {
+    return <div className="p-4 text-red-600">createClient/getUser exception: {String(e)}</div>
+  }
+
   if (!user) redirect('/login')
 
-  const { data: tasks, error } = await supabase
-    .from('tasks')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
+  let tasks: { id: number; title: string; status: string; user_id: string; created_at: string; updated_at: string }[] = []
+  try {
+    const { data, error } = await supabase!
+      .from('tasks')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('[tasks] Supabase query error:', JSON.stringify(error))
-    return (
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <p className="text-red-600 font-mono text-sm">
-          DB error: {error.message} (code: {error.code}, hint: {error.hint})
-        </p>
-      </div>
-    )
+    if (error) {
+      return (
+        <div className="p-4 text-red-600 font-mono text-sm">
+          DB error: {error.message}<br />
+          code: {error.code}<br />
+          hint: {error.hint ?? 'none'}
+        </div>
+      )
+    }
+    tasks = data ?? []
+  } catch (e) {
+    return <div className="p-4 text-red-600">query exception: {String(e)}</div>
   }
 
   return (
