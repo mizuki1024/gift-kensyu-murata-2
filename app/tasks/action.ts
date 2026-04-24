@@ -11,18 +11,6 @@ async function getAuthenticatedClient() {
   return { supabase, user }
 }
 
-export async function getTasks() {
-  const { supabase, user } = await getAuthenticatedClient()
-  const { data, error } = await supabase
-    .from('tasks')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-
-  if (error) throw new Error(error.message)
-  return data
-}
-
 export async function createdTask(formData: FormData) {
   const title = formData.get('title') as string
   if (!title?.trim()) return

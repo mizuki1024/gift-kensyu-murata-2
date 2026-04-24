@@ -1,9 +1,21 @@
-import { getTasks, createdTask, deleteTask, updateTaskStatus } from './action'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/utils/supabase/server'
+import { createdTask, deleteTask, updateTaskStatus } from './action'
 
 const STATUS_OPTIONS = ['todo', 'in_progress', 'done'] as const
 
 export default async function TasksPage() {
-  const tasks = await getTasks()
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { data: tasks, error } = await supabase
+    .from('tasks')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+
+  if (error) throw new Error(error.message)
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
@@ -46,9 +58,7 @@ export default async function TasksPage() {
                 <select
                   name="status"
                   defaultValue={task.status}
-                  onChange={undefined}
                   className="text-xs border rounded px-2 py-1"
-                  onBlur={undefined}
                 >
                   {STATUS_OPTIONS.map((s) => (
                     <option key={s} value={s}>{s}</option>
