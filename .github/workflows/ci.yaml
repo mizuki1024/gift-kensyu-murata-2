@@ -1,0 +1,39 @@
+name: CI Pipline
+
+  on:
+    pull_request:
+
+  jobs:
+    test-and-build:
+      runs-on: ibuntu-latest
+
+    steps:
+      - name: コードをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: pnpmのセットアップ
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name:Node.jsのセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: パッケージのインストール
+        run: pnpm install
+
+      - name: 構文のチェック (ESLint)
+        run: pnpm lint
+
+      - name:型チェック
+        run: pnpm type-check
+
+      - name: 動作チェック
+        run: pnpm test
+
+      - name: ビルド
+        run: pnpm build
+   
